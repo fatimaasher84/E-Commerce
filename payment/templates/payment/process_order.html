@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+        <!-- Header-->
+        <header class="bg-dark py-5">
+            <div class="container px-4 px-lg-5 my-5">
+                <div class="text-center text-white">
+                    <h1 class="display-4 fw-bolder">Processing Order...</h1>
+                    <p class="lead fw-normal text-white-50 mb-0">This is temporary</p>
+                </div>
+            </div>
+        </header>
+        
+        <div class="container mb-5 mt-5">
+               <div class="row">                
+                   <br/>    
+                   <div class="col-md-6 offset-md-3">
+                        <div class="card">
+                        <div class="card-header">
+                          <strong>Order Summary</strong>
+                        </div>
+                        <div class="card-body">
+                            {% for product in cart_products%}
+                                <strong style="color:red;">{{product.name}}:</strong>
+                                <br/>
+                                Price:
+                                {% if product.is_sale %}                                     
+                                    <b>$ {{product.sale_price}}</b>
+                                {% else %}
+                                    <b>$ {{product.price}}</b>            
+                                {% endif %}
+                                <br/>Quantity:
+
+                                {% for key,value in quantities.items %}
+                                    {% if key == product.id|slugify %}
+                                        <b>{{value}}</b>
+                                    {% endif %}
+                                {% endfor %}
+                                <br/><br/>
+
+                            {% endfor %}
+                            <a href="{% url 'cart_summary' %}" class="btn btn-sm btn-outline-danger">Update Items</a>
+                            <div  align="right">
+                                <h4>Total:&nbsp;&nbsp;<span style="color:red;">$ {{totals}}</span></h4>
+                                <br/>
+                            </div>
+                        </div>
+                        
+                        </div>
+
+                        <br/>
+                        <div class="card">
+                            <div class="card-header">
+                              <strong>Shipping Information</strong>
+                            </div>
+                            <div class="card-body">                     
+                                    Name: {{shipping_info.shipping_full_name}}<br/>
+                                    Email: {{shipping_info.shipping_email}}<br/>
+                                    Address 1: {{shipping_info.shipping_address1}}<br/>
+                                    Address 2: {{shipping_info.shipping_address2}}<br/>
+                                    City: {{shipping_info.shipping_city}}<br/>
+                                    State: {{shipping_info.shipping_state}}<br/>
+                                    Zipcode: {{shipping_info.shipping_zipcode}}<br/>
+                                    Country: {{shipping_info.shipping_country}}<br/>
+                                    <br/>
+                                    <a href="{% url 'checkout' %}" class="btn btn-sm  btn-outline-danger">Update shipping</a>
+                            </div>
+                            <br/>
+                        </div>
+                        <br/>
+                        <div class="card">
+                            <div class="card-header">
+                              <strong>Billing Information</strong>
+                            </div>
+                            <form method="POST" action="{% url 'process_order' %}">
+                            <div class="card-body">
+                                    {% csrf_token %}
+                                    {{ billing_form.as_p }} 
+                            </div>
+                        </div>
+                            <br/>
+                            <button type="submit" class="btn btn-secondary">Pay Now</button>
+                        </form>
+                                
+                    </div>
+                   </div>                   
+               </div>
+        </div>
+        
+{% endblock %}

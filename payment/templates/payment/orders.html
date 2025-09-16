@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+    <!-- Header-->
+    <header class="bg-dark py-5">
+        <div class="container px-4 px-lg-5 my-5">
+            <div class="text-center text-white">
+                <h1 class="display-4 fw-bolder">Dashboard</h1>
+            </div>
+        </div>
+    </header>
+    <div class="container mt-3">
+        <div class="row">
+            
+            <br/><br/><h3>Order</h3>
+            <br/>
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><b>Order {{order.id}}</b><div class="float-end"><b style="color:red">$ {{order.amount_paid}}</b></div></h5>
+                    </div>
+                    <div class="card-body">
+                        <h4>{{order.full_name}}</h4>
+                        <p style="color:blue">{{order.email}}</p>
+                        <b>Shipping Address:</b> <pre>{{order.shipping_address}}</pre>
+                        {% if order.date_shipped %}
+                            <p class="card-text"><b>Date Shipped:</b> {{order.date_shipped}}</p>
+                        {% else %}
+                            <p class="card-text"><b>Date Ordered:</b> {{order.date_ordered}}</p>
+                        {% endif %}
+                        <br/>
+                        <div class="row">
+                        {% for item in items %}
+                            <div class="col-sm-4 mb-3 mb-sm-0">
+                                <div class="card text-bg-light mb-3" style="max-width: 18rem;">
+                                    <img src="{{item.product.image.url}}" class="card-img-top" style="width:200px; height:100%;">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{item.product}}</h5>
+                                        <p class="card-title"><b>Quantity: {{item.quantity}}</b></p>
+                                        <p class="card-text" style="color:red;">Price: $ {{item.price}}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                        </div>
+                        <br/>            
+                        {% if not order.shipped %}
+                            <form method="post">
+                            {% csrf_token %}
+                                <input type="hidden" name="shipping_status" value="true">
+                                <button type="submit" class="btn btn-success">Mark As Shipped</button>
+                                <a href="{% url 'home' %}" class="btn btn-primary">Home</a> 
+                            </form>
+                        {% else %}
+                            <!-- not shipped -->
+                            <form method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="shipping_status" value="false">
+                                <button type="submit" class="btn btn-danger">Mark As Not Shipped</button> 
+                                <a href="{% url 'home' %}" class="btn btn-primary">Home</a>
+                            </form>
+                        {% endif %}
+                        <br/>
+                    </div>
+                </div>  
+                <br><br/>
+            </div>
+        </div>
+    </div>
+        
+{% endblock %}
