@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+        <!-- Header-->
+        <header class="bg-dark py-5">
+            <div class="container px-4 px-lg-5 my-5">
+                <div class="text-center text-white">
+                    <h1 class="display-4 fw-bolder">Shopping Cart</h1>
+                    <p class="lead fw-normal text-white-50 mb-0">View your cart..</p>
+                </div>
+            </div>
+        </header>
+        
+        <div class="container mb-5 mt-5">
+        
+        {% if cart_products %}
+            <h3 class="text-secondary">Cart Summary</h3>
+            <br/>
+            {% for product in cart_products%}
+                <div class="card mb-3">    
+                    <div class="row g-0">
+                        <div class="col-md-4">
+                            <img src="{{product.image.url}}" class="img-fluid rounded-start" style=" height:300px;">
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body">
+                                <h3 class="card-title">{{product.name}}</h3>
+                                <b class="text-secondary">{{product.category}}</b>
+                                <br/><br/>
+                                <p class="card-text">{{product.description}}</p>
+                                {% if product.is_sale %}                                     
+                                    <p class="card-text" style="color:red;"><b><span class="text-muted text-decoration-line-through">$ {{product.price}}</span>&nbsp; $ {{product.sale_price}}</b></p>
+                                {% else %}
+                                    <p class="card-text" style="color:red;"><b>$ {{product.price}}</b></p>            
+                                {% endif %}
+                                <div class="row">
+                                    <div class="col-md-2">Quantity</div>
+                                    <div class="col-md-2">
+                                    <select class="form-select form-select-sm" id="select{{product.id}}">
+                                            {% for key,value in quantities.items %}
+                                                {% if key == product.id|slugify %}
+                                                    <option selected>{{value}}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                            <option value="1">1</option>
+                                            <option value="2">2</option>
+                                            <option value="3">3</option>
+                                            <option value="4">4</option>
+                                            <option value="5">5</option>
+                                    </select>
+                                    </div>
+                                </div>
+                                <br/>
+                                <a href="{% url 'home' %}" class="btn btn-secondary">Home</a>
+                                <button type="button" data-index="{{product.id}}" class="btn btn-secondary update-cart">Update</button>   
+                                <button type="button" data-index="{{product.id}}" class="btn btn-danger delete-product">Remove Item</button>
+                            </div>
+                        </div>
+                    </div>    
+                </div>
+            {% endfor %}
+            <div class="container">
+                <div  align="right"><h3>Total: &nbsp; &nbsp; &nbsp;<span class="text-danger">$ {{totals}}</span> </h3><br/>
+                <a href="{% url 'checkout' %}" class="btn btn-success">Checkout</a></div>
+            </div>
+            
+        {% else %}
+            <p><center>Your Cart is Empty....</center></p>
+        {% endif %}
+        </div>
+        <script>
+            //Update Item
+            //Check if button pressed,we use a period(.) for class and # for id
+          $(document).on('click','.update-cart',function(e){
+            //check if button is really clicked
+            e.preventDefault();
+            //grab product id
+            var productid=$(this).data('index');
+
+            //ajax sends data to server without refreshing page
+            $.ajax({
+                
+                type:'POST',
+                url:'{% url "cart_update" %}',
+                
+                data: { 
+                  //getting product id of product which is on cart
+                  product_id: $(this).data('index'),
+
+                  //getting quantity of product added to cart
+                  product_qty: $('#select'+productid+' option:selected').text(),
+                  
+                  //we are submitting a hidden form 
+                  csrfmiddlewaretoken:'{{ csrf_token }}',
+                  action:'post'
+                },
+                
+                success: function(json){
+                    
+                    location.reload();
+                },
+
+                error:function(xhr,errmsg,err){ 
+                }
+
+            });
+          })
+
+          //Remove Item
+          $(document).on('click','.delete-product',function(e){
+            //check if button is really clicked
+            e.preventDefault();
+            
+            //ajax sends data to server without refreshing page
+            $.ajax({
+                
+                type:'POST',
+                url:'{% url "cart_delete" %}',
+                
+                data: { 
+                  //getting product id of product which is on cart
+                  product_id: $(this).data('index'),
+                  csrfmiddlewaretoken:'{{ csrf_token }}',
+                  action:'post'
+                },
+                
+                success: function(json){
+                    location.reload();
+                },
+
+                error:function(xhr,errmsg,err){ 
+                }
+
+            });
+          })
+        </script>
+
+{% endblock %}
