@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'cart',
     'payment',
     'whitenoise.runserver_nostatic',
+    'paypal.standard.ipn',
 ]
 
 MIDDLEWARE = [
@@ -104,7 +105,7 @@ DATABASES = {
         'NAME':'railway',
         'USER':'postgres',
         #we don't want to show our password publically,so we will use environment variable stored in .env file
-        'PASSWORD':os.environ['DB_PASSWORD_YO'],
+        'PASSWORD':os.environ.get('DB_PASSWORD_YO'),
         'HOST':'switchback.proxy.rlwy.net',
         'PORT':'54502',
         
@@ -161,3 +162,9 @@ MEDIA_ROOT=os.path.join(BASE_DIR,'media')
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+#paypal settings
+#set sandbox to true
+PAYPAL_TEST = True
+PAYPAL_RECEIVER_EMAIL='business@codemy.com'     #business sandbox account
