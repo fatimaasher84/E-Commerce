@@ -14,7 +14,7 @@ from pathlib import Path
 import os
 
 #TO use environment variables from python-dotenv
-# to use load_dotenv we need to make .env file in the same folder as in settings.py file by using    echo. > .env    in  cmd terminal
+# to use load_dotenv we need to make .env file in the same folder as in settings.py file by using    echo. > .env   in  cmd terminal
 # make another file echo.> .gitignore so that it doesnot upload on github.because we want to save it privately.
 #so we just write   .env     in   .gitignore file to tell which files to ignore while uploading our project on github 
 from dotenv import load_dotenv 
@@ -105,6 +105,9 @@ DATABASES = {
         'NAME':'railway',
         'USER':'postgres',
         #we don't want to show our password publically,so we will use environment variable stored in .env file
+        #'PASSWORD':os.environ.get('DB_PASSWORD_YO'),
+
+        #Value is coming from railway environment variable
         'PASSWORD':os.environ['DB_PASSWORD_YO'],
         'HOST':'switchback.proxy.rlwy.net',
         'PORT':'54502',
